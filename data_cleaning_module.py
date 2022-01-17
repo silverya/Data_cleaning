@@ -1,27 +1,5 @@
 import re
-
-# 검토할 텍스트
-text = """(단독공개)  「제휴 서비스」 
-          ※제휴 가능※ 【사진 찍어주세요】
-          인기제품의 할인정보를 비교해보세요
-          (기자 파티) 댓글 30개
-          재판매 및 DB 금지
-          인기제품의할인정보를비교해보세요
-          프로필 상단 바로가기
-          @jennyrubyjane @fff_dd
-          @나나나 
-          #팔로우 #맞팔 #좋아요테러
-          #fdsfsdfsf
-          추천인코드 : [ㅓㅁㄴ아ㅣdsad]
-          내공 500
-          게시물이 삭제되어 요청하신 페이지를 표시할 수 없습니다.
-          권한이 없거나 삭제되었습니다.
-          |작성자 |
-          이재명 전 경기도 시장이 대선에 출마하였습니다. 9시 뉴스  9시뉴스 동아일보 김상현 기자 http://www.youtu.be/-ZClicWm0zM shking456@gmail.com  #sdf #화이팅 #제니 #아이유 01-456-4567 
-          010-4567-8756 """
-
-# 언론 블로그 인스타그램 트위터 커뮤니티 지식인
-channel_name = '인스타그램'
+import numpy as np
 
 
 # 노이즈 문구 인덱스 추출
@@ -117,15 +95,15 @@ def extrackNoiseIndex(text, channel_name) :
   (\#[\w]{1,})
   """
 
-  if channel_name == '언론' :
+  if channel_name == 'DN' :
     p = re.compile(common_condition+news_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == '블로그' :
+  elif channel_name == 'BL' :
     p = re.compile(common_condition+blog_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == '인스타그램' :
+  elif channel_name == 'IG' :
     p = re.compile(common_condition+instagram_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == '트위터' :
+  elif channel_name == 'TW' :
     p = re.compile(common_condition+twitter_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == '커뮤니티' :
+  elif channel_name == 'DC' :
     p = re.compile(common_condition+community_condition, re.VERBOSE|re.MULTILINE)
   else  :
     p = re.compile(common_condition+qna_condition, re.VERBOSE|re.MULTILINE)      
@@ -149,15 +127,18 @@ def extrackNoiseIndex(text, channel_name) :
 
 # 노이즈 문구 출력
 def extrackNoiseSentence(sIndex, eIndex, noise_sentences) :
-      
-  for i in range(len(sIndex)) :
-    print("sIndex : %s" %sIndex[i])
-    print("eIndex : %s" %eIndex[i])
-    print("noise_sentence : ", noise_sentences[i])
-    #print(text[sIndex[i]:eIndex[i]+1])
-    
-    
+  
+  result_arr = np.stack((sIndex, eIndex, noise_sentences), axis=1)
+  
+  return result_arr
+  
+def main(text, channel_name) :
+  
+  sIndex, eIndex, noise_sentences = extrackNoiseIndex(text, channel_name)
+  result_arr = extrackNoiseSentence(sIndex, eIndex, noise_sentences)    
+  
+  return result_arr
+       
 if __name__ == '__main__':
     
-  sIndex, eIndex, noise_sentences = extrackNoiseIndex(text, channel_name)
-  extrackNoiseSentence(sIndex, eIndex, noise_sentences)    
+  main()   
