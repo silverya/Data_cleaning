@@ -1,4 +1,4 @@
-import data_cleaning_module as dc
+import data_cleaning_module
 
 # 검토할 텍스트
 text = """(단독공개)  「제휴 서비스」 
@@ -21,11 +21,12 @@ text = """(단독공개)  「제휴 서비스」
           010-4567-8756 """
 
 # 언론(DN) 블로그(BL) 인스타그램(IG) 트위터(TW) 커뮤니티(DC) 지식인(QA)
-channel_name = 'DN'
+channel = 'DN'
 
-arr = dc.main(text, channel_name)
+data_clean = data_cleaning_module.dataClean(text, channel)
+result = data_clean.main()
+print(result)
 
-print(arr)
 
 ''' result
 

@@ -7,5 +7,7 @@
 * test.py 참조
 
 - 모듈 import
-- 해당 문서의 text와 channel을 모듈의 main 함수의 parameter로 넣음
+- class 생성
+- 해당 문서의 text와 channel을 모듈의 class의 parameter로 넣음
+- main 함수 호출
 - 2차원 배열로 결과 출력 

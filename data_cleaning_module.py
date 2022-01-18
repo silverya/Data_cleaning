@@ -1,16 +1,10 @@
+# -*- coding: utf-8 -*-
 import re
 import numpy as np
 
-
-# 노이즈 문구 인덱스 추출
-def extrackNoiseIndex(text, channel_name) :
-    
-    
-  sIndex = []                       # 시작 인덱스 list
-  eIndex = []                       # 끝 인덱스 list
-  noise_sentences = []              # 도출한 noise list
-  
-  
+# class 
+class dataClean:
+      
   # 공통 조건
   common_condition = r"""
   \d{2,3}-\d{3,4}-\d{4}|                                                                                                # 전화번호   
@@ -18,7 +12,7 @@ def extrackNoiseIndex(text, channel_name) :
   (http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?|                                                   # url
   [△ⓒ■◇▲◆□◇▶]|                                                                                                     # 특수기호
   """
-  
+    
   # 언론 채널 조건
   news_condition =  r"""
   (\[|\(|\<|\【)[\w\s]*(데일리|KBS|the300|데일리|TV|경제|기사입니다|기자|끝|뉴스|구독|뉴시스|닷컴|미디어|사진|상보|속보|스포츠|DB|신문|앵커|영상|원문|인사이트|자료|자세한 내용|저작권|제공|제작|종합|출고일시|출연자|출처|취재|편집|캡처|코리아|토론)[\w\s]*(\]|\)|\>|\】)|
@@ -93,52 +87,52 @@ def extrackNoiseIndex(text, channel_name) :
   (게시물이)\s?(삭제되어)\s?(요청하신)\s?(페이지를)\s?(표시할)\s?(수)\s?(없습니다.)|
   (\[|\(|\<|\【|「)[\w\s]*(캐시백|보기|특징|서론|출력|Web발신|UNISEX|기자|아이뉴스24|서울=|뉴시스)[\w\s]*(\]|\)|\>|\】|」)|
   (\#[\w]{1,})
-  """
+  """    
+      
+  def __init__(self, text, channel):
+    self.text = text
+    self.channel = channel  
 
-  if channel_name == 'DN' :
-    p = re.compile(common_condition+news_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == 'BL' :
-    p = re.compile(common_condition+blog_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == 'IG' :
-    p = re.compile(common_condition+instagram_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == 'TW' :
-    p = re.compile(common_condition+twitter_condition, re.VERBOSE|re.MULTILINE)
-  elif channel_name == 'DC' :
-    p = re.compile(common_condition+community_condition, re.VERBOSE|re.MULTILINE)
-  else  :
-    p = re.compile(common_condition+qna_condition, re.VERBOSE|re.MULTILINE)      
-
-  all_m = p.finditer(text)
-  
-  if p.search(text) is not None :
-    for m in all_m :
-      startNum = m.start()
-      endNum = m.end()
-      noise_sentence = m.group()
-      #print("{0}, {1}".format(startNum,endNum))
-      sIndex.append(startNum)
-      eIndex.append(endNum)
-      noise_sentences.append(noise_sentence) 
-  else :
-      print("nothing")   
-
-  return sIndex, eIndex, noise_sentences
-
-
-# 노이즈 문구 출력
-def extrackNoiseSentence(sIndex, eIndex, noise_sentences) :
-  
-  result_arr = np.stack((sIndex, eIndex, noise_sentences), axis=1)
-  
-  return result_arr
-  
-def main(text, channel_name) :
-  
-  sIndex, eIndex, noise_sentences = extrackNoiseIndex(text, channel_name)
-  result_arr = extrackNoiseSentence(sIndex, eIndex, noise_sentences)    
-  
-  return result_arr
-       
-if __name__ == '__main__':
+  # 노이즈 문구 인덱스 추출
+  def extrackNoiseIndex(self) :
+      
+    sIndex = []                       # 시작 인덱스 list
+    eIndex = []                       # 끝 인덱스 list
+    noise_sentences = []              # 도출한 noise list
     
-  main()   
+    clean_data_dict = {}
+    clean_data_dict['DN'] = re.compile(dataClean.common_condition+dataClean.news_condition, re.VERBOSE|re.MULTILINE)
+    clean_data_dict['BL'] = re.compile(dataClean.common_condition+dataClean.blog_condition, re.VERBOSE|re.MULTILINE)
+    clean_data_dict['IG'] = re.compile(dataClean.common_condition+dataClean.instagram_condition, re.VERBOSE|re.MULTILINE)
+    clean_data_dict['TW'] = re.compile(dataClean.common_condition+dataClean.twitter_condition, re.VERBOSE|re.MULTILINE)
+    clean_data_dict['DC'] = re.compile(dataClean.common_condition+dataClean.community_condition, re.VERBOSE|re.MULTILINE)
+    clean_data_dict['QA'] = re.compile(dataClean.common_condition+dataClean.qna_condition, re.VERBOSE|re.MULTILINE)
+    
+    p = clean_data_dict.get(self.channel)
+
+    all_m = p.finditer(self.text)
+    
+    if p.search(self.text) is not None :
+      for m in all_m :
+        startNum = m.start()
+        endNum = m.end()
+        noise_sentence = m.group()
+        #print("{0}, {1}".format(startNum,endNum))
+        sIndex.append(startNum)
+        eIndex.append(endNum)
+        noise_sentences.append(noise_sentence) 
+    else :
+        print("nothing")   
+
+    result_arr = np.stack((sIndex, eIndex, noise_sentences), axis=1)
+    
+    return result_arr
+
+    
+  def main(self) :
+    
+    result_arr = self.extrackNoiseIndex()
+   
+    return result_arr
+
+
